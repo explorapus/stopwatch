@@ -1,22 +1,14 @@
 document.body.onload = setup;
 let ets //elasped time (in) seconds
-let timeBefore, laps, going, lastLapTime
+let timeBefore, laps, going, lastLapTime, startTime
 
 function setup() {
-  lastLapTime = 0
-  ets = 0
-  laps = 1
-  going = false
-  starting = false
+  reset()
   updateTime()
-  addElement(lastLapTime)
 }
 
 function updateTime() {
   t = new Date()
-  if (typeof startTime == "undefined") {
-    document.getElementById("time").innerHTML = "00:00:00"
-  }
   if (going) {
     ets = Math.round((t - startTime) / 1000) + timeBefore
     document.getElementById("time").innerHTML = formatTime(ets)
@@ -26,11 +18,7 @@ function updateTime() {
   }
 }
 
-document.getElementById("start").addEventListener('click', function(e) {
-  if (starting == false) {
-    timeBefore = 0
-  }
-  starting = true
+document.getElementById("start").addEventListener('click', () => {
   if (going == false) {
     startTime = new Date()
     going = true
@@ -43,19 +31,13 @@ document.getElementById("start").addEventListener('click', function(e) {
   }
 })
 
-document.getElementById("lap").addEventListener('click', function(e) {
+document.getElementById("lap").addEventListener('click', () => {
   if (going) {
     laps++
     addElement(lastLapTime)
     lastLapTime = ets
   } else {
-    lastLapTime = 0
-    laps = 1
-    info.replaceChildren();
-    timeBefore = 0
-    ets = 0
-    addElement(lastLapTime)
-    document.getElementById("time").innerHTML = "00:00:00"
+    reset()
   }
 })
 
@@ -87,7 +69,7 @@ function addElement(lastLapTime) {
   info.insertAdjacentElement("afterbegin", newDiv);
 }
 
-document.getElementById("info").addEventListener('dblclick', function(e) {
+document.getElementById("info").addEventListener('dblclick', (e) => {
   clicked = e.target
   if (e.target.classList.contains('lapNameDiv')) {
     //genius stuff from https://stackoverflow.com/questions/48977986/editing-form-by-double-clicking-element
@@ -116,4 +98,11 @@ function formatTime(seconds) {
   dh = String(Math.floor(seconds / 3600))
   dh = dh.length == 1 ? "0" + String(dh) : String(dh)
   return dh + ":" + dm + ":" + ds
+}
+
+function reset(){
+  [lastLapTime,timeBefore,ets,laps, going] = [0,0,0,1, false]
+  info.replaceChildren();
+  addElement(lastLapTime)
+  document.getElementById("time").innerHTML = "00:00:00"
 }
